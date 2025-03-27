@@ -1,11 +1,17 @@
 import { TodoInput } from "./TodoInput"
 import { TodoList } from "./TodoList"
-import React, { useState } from "react"
+import { BottomContainer } from "./BottomContainer"
+import React, { useMemo, useState } from "react"
+import { TodoListState } from "../types"
 import type { Todo } from "../types"
 import type { FC } from "react"
 
 export const TodoApp: FC = () => {
     const [todos, setTodos] = useState<Todo[]>([])
+    const [listState, setListState] = useState<TodoListState>(TodoListState.ALL)
+
+    const activeTodos = todos.filter(todo => !todo.completed)
+    const completedTodos = todos.filter(todo => todo.completed)
 
     const addTodo = (text: string) => {
         const newTodo: Todo = {
@@ -21,17 +27,27 @@ export const TodoApp: FC = () => {
         setTodos(todos.map((todo) => todo.id === id ? { ...todo, completed: !todo.completed } : todo))
     }
 
-    const activeTodos = todos.filter(todo => !todo.completed)
-    const completedTodos = todos.filter(todo => todo.completed)
+    const handleFilter = (state: TodoListState) => { setListState(state) }
+    const handleClear = () => { setTodos(activeTodos) }
+
+    const curentList = useMemo(() =>
+        listState === TodoListState.ACTIVE ?
+            activeTodos :
+            listState === TodoListState.COMPLETED ?
+                completedTodos :
+                todos
+        , [listState, activeTodos, completedTodos, todos])
 
     return (
         <div className="todo-app">
-            <h1>Todo List</h1>
+            <h1>todos</h1>
             <TodoInput onAdd={addTodo} />
-            <h2>Active Tasks ({activeTodos.length})</h2>
-            <TodoList todos={activeTodos} onToggle={toggleTodo} />
-            <h2>Completed Tasks ({completedTodos.length})</h2>
-            <TodoList todos={completedTodos} onToggle={toggleTodo} />
+            <TodoList todos={curentList} onToggle={toggleTodo} />
+            <BottomContainer
+                onFilterPress={handleFilter}
+                onClearPress={handleClear}
+                total={activeTodos.length}
+                listState={listState} />
         </div>
     )
 }

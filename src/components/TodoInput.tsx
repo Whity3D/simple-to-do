@@ -24,7 +24,6 @@ export const TodoInput: FC<TodoInputProps> = ({ onAdd }) => {
                 onChange={(e) => setText(e.target.value)}
                 placeholder="What needs to be done?"
             />
-            <button type="submit">Add</button>
         </form>
     )
 }

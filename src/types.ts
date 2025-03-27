@@ -4,3 +4,9 @@ export interface Todo {
     completed: boolean;
     createdAt: Date;
 }
+
+export enum TodoListState {
+    ALL = "ALL",
+    ACTIVE = "ACTIVE",
+    COMPLETED = "COMPLETED",
+}
